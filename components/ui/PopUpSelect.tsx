@@ -1,13 +1,6 @@
-import React from "react";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+"use client";
+
+import React, { useEffect, useState } from "react";
 
 interface CityOption {
   value: string;
@@ -15,44 +8,72 @@ interface CityOption {
 }
 
 interface PopUpSelectProps {
-  cities: CityOption[];
-  onSelect: (city: string) => void; // Add the onSelect prop
+  onSelect: (city: CityOption) => void;
 }
 
-const PopUpSelect: React.FC<PopUpSelectProps> = ({ cities, onSelect }) => {
-  // Group cities by country
-  const groupedCities = cities.reduce((groups, { label, value }) => {
-    const country = label.split(", ")[1];
-    if (!groups[country]) {
-      groups[country] = [];
-    }
-    groups[country].push({ value, label });
-    return groups;
-  }, {} as Record<string, CityOption[]>);
+const PopUpSelect: React.FC<PopUpSelectProps> = ({ onSelect }) => {
+  const [query, setQuery] = useState<string>("");
+  const [cities, setCities] = useState<CityOption[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchCities = async () => {
+      if (query.length < 3) return;
+
+      const url = `/api/getCities?query=${query}`;
+
+      setLoading(true);
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log("Data from API route:", data);
+        if (data.status === "OK" && data.predictions) {
+          const cityOptions = data.predictions.map((prediction: any) => ({
+            value: prediction.place_id,
+            label: prediction.description,
+          }));
+          setCities(cityOptions);
+        }
+      } catch (error) {
+        console.error("Error fetching data from API route:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCities();
+  }, [query]);
+
+  const handleCityClick = (city: CityOption) => {
+    onSelect(city); // Pass selected city to parent component
+    setQuery(city.label);
+    setCities([]);
+  };
 
   return (
-    <div className="flex justify-center mb-7">
-      <Select onValueChange={onSelect}>
-        {" "}
-        {/* Pass onSelect to Select */}
-        <SelectTrigger className="w-[250px] text-black bg-white hover:bg-primary hover:text-white">
-          <SelectValue placeholder="Select a city" />
-        </SelectTrigger>
-        <SelectContent className="text-black bg-white">
-          {Object.entries(groupedCities).map(([country, cities]) => (
-            <SelectGroup key={country}>
-              <SelectLabel className="text-24 bg-primary text-white rounded">
-                {country}
-              </SelectLabel>
-              {cities.map((city) => (
-                <SelectItem key={city.value} value={city.value}>
-                  {city.label}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          ))}
-        </SelectContent>
-      </Select>
+    <div className="flex flex-col items-center mb-7">
+      <input
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search for a city"
+        className="w-[250px] p-2 border border-gray-300 rounded"
+      />
+      {loading && <div>Loading...</div>}
+      <ul className="w-[250px] bg-white border border-gray-300 mt-2 rounded max-h-60 overflow-y-auto text-accent">
+        {cities.map((city) => (
+          <li
+            key={city.value}
+            className="p-2 hover:bg-gray-100 cursor-pointer"
+            onClick={() => handleCityClick(city)}
+          >
+            {city.label}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };

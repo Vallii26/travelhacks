@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { FloatingNav } from "@/components/ui/FloatingNav";
+import { NavbarDemo } from "@/components/ui/navbarMenu";
 import PopUpSelect from "@/components/ui/PopUpSelect";
-import citiesData from "@/components/cities.json";
 import { DatePickerWithRange } from "@/components/ui/datePicker";
 import ActivitySelect from "@/components/ui/ActivitySelect";
 import Image from "next/image";
@@ -12,24 +11,15 @@ import RelationSelect from "@/components/ui/RelationSelect";
 import { FaHome, FaPlane } from "react-icons/fa";
 import { Spotlight } from "@/components/ui/Spotlight";
 import { TextGenerateEffect } from "@/components/ui/TextGenerateEffect";
-import { Modal } from "@/components/ui/animated-modal";
 import { AnimatedModalDemo } from "@/components/ui/modal";
-import { Vortex } from "@/components/ui/vortex";
-import { useRouter } from "next/navigation";
-
-const cities = citiesData.map(({ city, country }) => ({
-  value: `${city.toLowerCase()}, ${country.toLowerCase()}`,
-  label: `${city}, ${country}`,
-}));
+import Summary from "@/components/ui/Summary";
 
 const Itineraries = () => {
-  const router = useRouter();
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
   const [number, setNumber] = useState<number>(1);
 
-  // Function to handle the city selection
   const handleCitySelect = (city: string | null) => {
     setSelectedCity(city);
   };
@@ -42,7 +32,6 @@ const Itineraries = () => {
     setSelectedActivity(activity);
   };
 
-  // Determine visible options based on number of travellers
   const getVisibleRelationOptions = (num: number) => {
     if (num <= 1) return [];
     if (num === 2) return ["couple", "family", "friends"];
@@ -57,16 +46,7 @@ const Itineraries = () => {
       />
       <Spotlight className="h-[80vh] w-[50vw] top-10 right-0" fill="purple" />
       <Spotlight className="right-20 top-28 h-[80vh] w-[50vw]" fill="blue" />
-      <FloatingNav
-        navItems={[
-          { name: "Home", link: "/", icon: <FaHome /> },
-          {
-            name: "Custom Iteneraries",
-            link: "/custom-itineraries",
-            icon: <FaPlane />,
-          },
-        ]}
-      />
+      <NavbarDemo />
       <div className="relative text-white font-bold leading-snug tracking-wide">
         <header className="mt-10 text-center py-8 mb-5">
           <TextGenerateEffect
@@ -98,7 +78,7 @@ const Itineraries = () => {
               />
             </svg>
           </h1>
-          <PopUpSelect cities={cities} onSelect={handleCitySelect} />
+          <PopUpSelect onSelect={handleCitySelect} />
 
           {/* Date Picker */}
           {selectedCity && (
@@ -188,6 +168,13 @@ const Itineraries = () => {
       <div className="bottom-4 right-4">
         <AnimatedModalDemo />
       </div>
+      {/*<Summary
+        city={selectedCity}
+        date={selectedDate} // Pass the DateRange object here
+        activities={selectedActivity ? [selectedActivity] : []} // Adjust if you handle multiple activities
+        number={number}
+        relationshipOptions={getVisibleRelationOptions(number)}
+      />*/}
     </div>
   );
 };

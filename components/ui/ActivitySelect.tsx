@@ -100,6 +100,13 @@ const ActivitySelect: React.FC<ActivitySelectProps> = ({ onSelect }) => {
           />
           Historical
         </ToggleGroupItem>
+        <ToggleGroupItem
+          className="flex items-center bg-white text-black hover:bg-primary hover:text-white gap-2"
+          value="party"
+        >
+          <Image src="/assets/party.svg" height={20} width={20} alt="party" />
+          Party
+        </ToggleGroupItem>
       </ToggleGroup>
     </div>
   );

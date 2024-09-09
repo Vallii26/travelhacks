@@ -21,6 +21,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".next/types/app/custom-itineraries/page.tsx", ".next/types/app/itineraries/page.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".next/types/app/custom-itineraries/page.tsx", ".next/types/app/itineraries/page.tsx", "testGooglePlaces.js"],
   "exclude": ["node_modules"]
 }
